@@ -246,6 +246,14 @@
 				background: #fee;
 			}
 
+			.logic-table tbody tr.unusable-row {
+				opacity: 0.4;
+			}
+
+			.logic-table tbody tr.unusable-row:hover {
+				opacity: 0.6;
+			}
+
 			.hex-value {
 				font-family: 'Courier New', monospace;
 				color: #999;
@@ -501,9 +509,11 @@
 						.map(([id]) => parseInt(id))
 				)
 
-				// Mark duplicates
+				// Mark duplicates and usability
 				allLogics.forEach((logic) => {
 					logic.isDuplicate = duplicateIds.has(logic.decimalId)
+					// Only Logic.* sections are usable with ECP 0x110E0000
+					logic.isUsable = logic.section.startsWith('Logic.')
 				})
 
 				// Show results section
@@ -526,24 +536,26 @@
 			function updateStats(duplicateCount = 0) {
 				const types = {}
 				const sections = {}
+				let usableCount = 0
 
 				allLogics.forEach((logic) => {
 					types[logic.type] = (types[logic.type] || 0) + 1
 					sections[logic.section] = (sections[logic.section] || 0) + 1
+					if (logic.isUsable) usableCount++
 				})
 
 				let statsHtml = `
                 <div class="stat-card">
+                    <div class="stat-number">${usableCount}</div>
+                    <div class="stat-label">Usable IDs</div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-number">${allLogics.length}</div>
-                    <div class="stat-label">Total Logic IDs</div>
+                    <div class="stat-label">Total IDs</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">${Object.keys(types).length}</div>
                     <div class="stat-label">Logic Types</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${Object.keys(sections).length}</div>
-                    <div class="stat-label">Sections</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">${Math.min(...allLogics.map((l) => l.decimalId))}</div>
@@ -641,15 +653,20 @@
 
 				const html = sorted
 					.map(
-						(logic) => `
-                <tr class="${logic.isDuplicate ? 'duplicate-row' : ''}">
+						(logic) => {
+							const classes = []
+							if (logic.isDuplicate) classes.push('duplicate-row')
+							if (!logic.isUsable) classes.push('unusable-row')
+							return `
+                <tr class="${classes.join(' ')}">
                     <td><span class="decimal-value">${logic.decimalId}${logic.isDuplicate ? ' ⚠️' : ''}</span></td>
                     <td><span class="hex-value">${logic.hexAddress}</span></td>
                     <td><span class="logic-name">${logic.name}</span></td>
                     <td>${logic.type ? `<span class="logic-type">${logic.type}</span>` : '-'}</td>
                     <td><span class="section-badge">${logic.section}</span></td>
                 </tr>
-            `,
+            `
+						},
 					)
 					.join('')
 
