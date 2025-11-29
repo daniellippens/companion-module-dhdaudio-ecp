@@ -1,13 +1,13 @@
 {
 	"name": "companion-module-dhdaudio-ecp",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"main": "dist/main.js",
 	"type": "module",
 	"scripts": {
 		"postinstall": "husky",
 		"format": "prettier -w .",
 		"package": "npm run build && companion-module-build && node scripts/postbuild.mjs && npm run package:tgz",
-		"package:tgz": "cd pkg && tar -czvf ../dhdaudio-ecp-0.1.0.tgz * && cd ..",
+		"package:tgz": "cd pkg && tar -czvf ../dhdaudio-ecp-1.0.0.tgz * && cd ..",
 		"build": "rimraf dist && npm run build:main",
 		"build:main": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch",

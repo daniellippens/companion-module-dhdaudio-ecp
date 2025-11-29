@@ -127,7 +127,7 @@ export class ECPConnection {
 			const state = block[8] !== 0
 
 			this.logicStates.set(logicId, state)
-			this.instance.log('info', `Logic ${logicId} state updated: ${state ? 'ON' : 'OFF'}`)
+			this.instance.log('debug', `Logic ${logicId} state: ${state ? 'ON' : 'OFF'}`)
 
 			// Trigger feedback updates
 			this.instance.checkFeedbacks('logic_state')
